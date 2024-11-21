@@ -54,8 +54,35 @@ export class SeadragonCenterPanel extends CenterPanel {
         super.create();
 
         this.viewerId = "osd" + new Date().getTime();
-        this.$viewer = $('<div id="' + this.viewerId + '" class="viewer"></div>');
-        this.$content.prepend(this.$viewer);
+        this.$viewer = $('<div id="' + this.viewerId + '" class="viewer" role="img"></div>');
+        var manifestUrl = Utils.Urls.getHashParameter('manifest') || '';
+        var altText;
+        $.getJSON(manifestUrl, (manifestJson) => {
+            var sequences = manifestJson.sequences; 
+            var canvases;
+            var images; 
+            var resource;
+            var metadata;
+            sequences = manifestJson.sequences;
+            if (typeof sequences !== "undefined") {
+                canvases = sequences[0].canvases;
+                if (canvases.length > 0) {
+                    images = canvases[0].images;
+                    if (images.length > 0) {
+                        resource = images[0].resource;
+                        if (typeof resource === "object") {
+                            metadata = resource.metadata;
+                            if (metadata.length > 0) {
+                                altText = metadata[0].value;
+                            }
+                        }
+                    }
+                }
+            }
+            // altText = manifestJson?.sequences[0]?.canvases[0]?.images[0]?.resource?.metadata[0]?.value;
+            $(this.$content[0]).attr('aria-label', altText && `Summary: ${altText}`);
+        });
+            this.$content.prepend(this.$viewer);
 
         this.component.subscribe(BaseEvents.ANNOTATIONS, (args: any) => {
             this.overlayAnnotations();

@@ -70,12 +70,6 @@ src/extensions/*/lib/*.js
 src/extensions/*/.build
 
 #################
-## Dist
-#################
-
-dist
-
-#################
 ## Themes
 #################
 
